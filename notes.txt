@@ -1,0 +1,10 @@
+CREATE TABLE  `watsokel-db`.`VideoInventory` (
+`id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY ,
+`name`VARCHAR( 255 ) NOT NULL ,
+`category` VARCHAR( 255 ) NOT NULL ,
+`length` INT UNSIGNED NOT NULL ,
+`rented` BOOL NOT NULL DEFAULT  '1',
+UNIQUE (
+`name`
+)
+) ENGINE = INNODB
