@@ -2,10 +2,6 @@ label{
     display: inline-block;
     float: left;
     clear: left;
-    width: 9em;
-    text-align: right;
-}
-input {
-  display: inline-block;
-  float: left;
+    width: 7em;
+    text-align: left;
 }
