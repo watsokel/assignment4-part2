@@ -1,3 +1,3 @@
 <?php
-$myPassword = 'CujQY1ONd5WrdiZL';
+$dbpass = 'CujQY1ONd5WrdiZL';
 ?>

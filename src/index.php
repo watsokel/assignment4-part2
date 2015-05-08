@@ -4,15 +4,11 @@ ini_set('display_errors',1);
 include 'stored.php';
 session_start();
 
-
-$mysqli = new mysqli('oniddb.cws.oregonstate.edu', 'watsokel-db', $myPassword, 'watsokel-db');
+$mysqli = new mysqli('oniddb.cws.oregonstate.edu', 'watsokel-db', $dbpass, 'watsokel-db');
 if ($mysqli->connect_errno) {
   echo "Failed to connect to MySQL: (" . $mysqli->connect_errno . ") " . $mysqli->connect_error;
-} else{
-  echo 'Connection to database successful!<br>';
 }
 ?>
-
 
 <!DOCTYPE html>
 <html>
@@ -43,33 +39,26 @@ if ($mysqli->connect_errno) {
 			</form>
 		</section>
 
-    <section id="SQLCheckAdds">
-      <h2>Status of Adds (Testing Only)</h2>
-      <?php
-      if(isset($_GET['add'])){
-        echo 'You pressed the add button!<br>';
-        if(empty($_GET['videoName'])){
-          echo 'Sorry, video name form field cannot be empty<br>';
-        } else{
-          echo 'Great, you filled in a video name. Time to process it';
-          //INSERT this into the sql table?
-        }
-      }
-
-      ?>
-    </section>
-	  
-    <section>
+    
+    <section id="inventoryTable">
 		  <?php
       if(isset($_GET['add'])){
-        echo 'You pressed the add button!<br>';
-        if(empty($_GET['videoName'])){
-          echo 'Sorry, video name form field cannot be empty<br>';
-        } else{
+        if(empty($_GET['videoLength'])){
+          $_GET['videoLength'] = 0;
+        }
+        if(empty($_GET['videoName']) || !is_numeric($_GET['videoLength']) || $_GET['videoLength']<0) {
+          if(empty($_GET['videoName'])) {
+            echo 'ERROR: You must enter a Video Name.<br>';
+          }
+          if(!is_numeric($_GET['videoLength'])){ 
+            echo 'ERROR: Video length must be numeric.<br>';
+          }
+          if($_GET['videoLength']<0){ 
+            echo 'ERROR: Video length must be 0 or greater.<br>';
+          }
+        } else {
           if (!($stmt = $mysqli->prepare("INSERT INTO VideoInventory(name, category, length, rented) VALUES (?,?,?,?)"))) {
             echo "Prepare failed: (" . $mysqli->errno . ") " . $mysqli->error;
-          } else {
-            echo 'prepare successful! YAY!<br>';
           }
           $vName = $_GET['videoName'];
           $vCat = $_GET['videoCategory'];
@@ -77,110 +66,132 @@ if ($mysqli->connect_errno) {
           $vRented = 0;
           if (!$stmt->bind_param("ssii", $vName, $vCat, $vLen, $vRented)) {
             echo "Binding parameters failed: (" . $stmt->errno . ") " . $stmt->error;
-          } else {
-            echo 'Bind successful, yay!<br>';
           }
           if (!$stmt->execute()) {
             echo "Execute failed: (" . $stmt->errno . ") " . $stmt->error;
-          }else {
-            echo "$vName successfully added!<br>";
           }
           $stmt->close();
         }
       }
-      ?>
-      <h2>Video Inventory</h2>
-      
-        <section id="inventoryOptions">
-          <form action="#" method="get">
-            <fieldset>
-              <legend>Filter Videos</legend>
-                  <?php  
-                    if (!($stmt = $mysqli->prepare("SELECT category FROM VideoInventory"))) {
-                      echo "Prepare failed: (" . $mysqli->errno . ") " . $mysqli->error;
-                    } else {
-                      //echo 'Prepare for dropdown successful<br>';
-                    }
-                    $vCat = null;
-                    if (!$stmt->execute()) {
-                      echo "Execute failed: (" . $mysqli->errno . ") " . $mysqli->error;
-                    } else {
-                      //echo 'Execution drop down success <br>';
-                    }
-                    if (!$stmt->bind_result($vCat)) {
-                      echo "Binding output parameters failed: (" . $stmt->errno . ") " . $stmt->error;
-                    } else {
-                      //echo 'binding category successful';
-                    }
-                    echo 'Select Category';
-                    echo '<select name="filter">';
-                    echo "<option value=\"All Movies\">All Movies</option>";
-                    while ($stmt->fetch()) {
-                      echo "<option value=\"$vCat\">$vCat</option>";
-                    }
-                    echo '</select>';
-                    echo "<button type=\"submit\">Filter</button>";
-                    $stmt->close();
-                    ?>
-            </fieldset>
-          </form>
-          <form action="#" method="get">
-            <fieldset>
-              <legend>Delete All Movies</legend>
-              <button type="submit" name="deleteAll">Delete All</button>      
-            </fieldset>
-          </form>
-        </section>
-      <?php
+
       if(isset($_GET['deleteAll'])){
         if (!($stmt = $mysqli->prepare("DELETE FROM VideoInventory"))) {
           echo "Prepare for delete all failed: (" . $mysqli->errno . ") " . $mysqli->error;
-        } else {
-          echo 'Prepare for delete all successful!<br>';
         }
         if (!$stmt->execute()) {
-            echo "Delete all execution failed: (" . $stmt->errno . ") " . $stmt->error;
-        }else {
-            echo "Delete all execution successful<br>";
+          echo "Delete all execution failed: (" . $stmt->errno . ") " . $stmt->error;
         }
       }
-      
       ?>
+      <h2>Video Inventory</h2>
+      <section id="inventoryOptions">
+        <form action="#" method="get">
+          <fieldset>
+            <legend>Filter Videos</legend>
+              <?php  
+                if (!($stmt = $mysqli->prepare("SELECT DISTINCT category FROM VideoInventory WHERE (category IS NOT NULL and category != '')"))) {
+                  echo "Prepare failed: (" . $mysqli->errno . ") " . $mysqli->error;
+                }
+                $vCat = null;
+                if (!$stmt->execute()) {
+                  echo "Execute failed: (" . $mysqli->errno . ") " . $mysqli->error;
+                }
+                if (!$stmt->bind_result($vCat)) {
+                  echo "Binding output parameters failed: (" . $stmt->errno . ") " . $stmt->error;
+                }
+                echo 'Select Category';
+                echo '<select name="filter">';
+                echo "<option value=\"allMovies\">All Movies</option>";
+                while ($stmt->fetch()) {
+                  echo "<option value=\"$vCat\">$vCat</option>";
+                }
+                echo '</select>';
+                echo "<button type=\"submit\">Filter</button>";
+                $stmt->close();
+              ?>
+          </fieldset>
+        </form>
+        <form action="#" method="get">
+          <fieldset>
+            <legend>Delete All Movies</legend>
+            <button type="submit" name="deleteAll">Delete All</button>      
+          </fieldset>
+        </form>
+      </section>
+
       <?php
         $colHeaders = array(
-          'vI' => 'ID',
-          'vN' => 'Name',
-          'vC' => 'Category',
-          'vL' => 'Length',
-          'vR' => 'Rented',
-          'vD' => 'Delete'
+          'vI'  => 'ID',
+          'vN'  => 'Name',
+          'vC'  => 'Category',
+          'vL'  => 'Length',
+          'vR'  => 'Status',
+          'vIO' => 'Check In/Check Out',
+          'vD'  => 'Delete'
         );
-        if(isset($_GET['filter'])){
-         if (!($stmt = $mysqli->prepare("SELECT * FROM VideoInventory WHERE category='$_GET[filter]"))) {
+        if(isset($_GET['checkIn'])){
+          $cID = $_GET['checkIn'];
+          if (!($stmt = $mysqli->prepare("UPDATE VideoInventory SET rented=? WHERE id=?"))) {
+            echo "Prepare failed: (" . $mysqli->errno . ") " . $mysqli->error;
+          }
+          $a=0;
+          if (!$stmt->bind_param("ii", $a, $cID)) {
+            echo "Binding parameters failed: (" . $stmt->errno . ") " . $stmt->error;
+          }
+          if (!$stmt->execute()) {
+            echo "Execute failed: (" . $stmt->errno . ") " . $stmt->error;
+          }
+          $stmt->close();
+        }
+        if(isset($_GET['checkOut'])){
+          $cID = $_GET['checkOut'];
+          if (!($stmt = $mysqli->prepare("UPDATE VideoInventory SET rented=? WHERE id=?"))) {
+            echo "Prepare failed: (" . $mysqli->errno . ") " . $mysqli->error;
+          }
+          $a=1;
+          if (!$stmt->bind_param("ii", $a,$cID)) {
+            echo "Binding parameters failed: (" . $stmt->errno . ") " . $stmt->error;
+          }
+          if (!$stmt->execute()) {
+            echo "Execute failed: (" . $stmt->errno . ") " . $stmt->error;
+          }
+          $stmt->close();
+        }
+
+        if(isset($_GET['deleteButton'])){
+          $dID = $_GET['deleteButton'];
+          if (!($stmt = $mysqli->prepare("DELETE FROM VideoInventory WHERE id=?"))) {
+            echo "Prepare failed: (" . $mysqli->errno . ") " . $mysqli->error;
+          }
+          if (!$stmt->bind_param("i", $dID)) {
+            echo "Binding parameters failed: (" . $stmt->errno . ") " . $stmt->error;
+          }
+          if (!$stmt->execute()) {
+            echo "Execute failed: (" . $stmt->errno . ") " . $stmt->error;
+          }
+          $stmt->close();
+        }
+
+        if(isset($_GET['filter']) && $_GET['filter'] !== 'allMovies'){
+          if (!($stmt = $mysqli->prepare("SELECT * FROM VideoInventory WHERE category = ?"))) {
             echo "Prepare for table printing failed: (" . $mysqli->errno . ") " . $mysqli->error;
-          } else {
-            echo '<br>Prepare for table printing successful! YAY!<br>';
-          } 
+          }
+          if (!$stmt->bind_param("s", $_GET['filter'])) {
+            echo "Binding parameters failed: (" . $stmt->errno . ") " . $stmt->error;
+          }
         }
         else{
           if (!($stmt = $mysqli->prepare("SELECT * FROM VideoInventory"))) {
             echo "Prepare for table printing failed: (" . $mysqli->errno . ") " . $mysqli->error;
-          } else {
-            echo '<br>Prepare for table printing successful! YAY!<br>';
           }
         }  
           
-
         if (!$stmt->execute()) {
             echo "Execute failed: (" . $stmt->errno . ") " . $stmt->error;
-        }else {
-            echo "Execution successful<br>";
         }
         $vID = $vName = $vCat = $vLen = $vRented = null;
         if (!$stmt->bind_result($vID, $vName, $vCat, $vLen, $vRented)) {
           echo "Binding result failed: (" . $stmt->errno . ") " . $stmt->error;
-        } else {
-          echo 'Bind result success, yay!<br>';
         }
         echo '<table border="1"><thead><tr>';
       
@@ -191,8 +202,20 @@ if ($mysqli->connect_errno) {
 
         while($stmt->fetch()){
           echo '<tr>';
-            echo "<td>$vID</td><td>$vName</td><td>$vCat</td><td>$vLen</td><td>$vRented</td>";
-            echo '<td><button name="deleteButton">Delete</button></td>';
+            echo "<td>$vID</td><td>$vName</td><td>$vCat</td><td>$vLen</td>";
+            if($vRented==0){
+              echo '<td>Available</td>';
+            } else{
+              echo '<td>Checked Out</td>';
+            }
+            echo '<form action="#" method="get">';
+              if($vRented==0){
+                echo "<td><button type=\"submit\" name=\"checkOut\" value=\"$vID\">Check Out</button></td>";
+              } else {
+                echo "<td><button type=\"submit\" name=\"checkIn\" value=\"$vID\">Check In</button></td>";;
+              }
+            echo '</form>';
+            echo "<form action=\"#\" method=\"get\"><td><button type=\"submit\" name=\"deleteButton\" value=\"$vID\">Delete</button></td></form>";
           echo '</tr>';
         }
         $stmt->close();
@@ -202,7 +225,6 @@ if ($mysqli->connect_errno) {
       </table>
       
     </section>
-	</div>
 
 	</body>
 </html>
