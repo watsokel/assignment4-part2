@@ -1,0 +1,33 @@
+Task Log (CS290 Assignment 4, Part 2)
+
+Start: Thu, 7 May 2015 22:47:00 -0700
+End: Thu, 7 May 2015 22:51:58 -0700
+Tasks: Updated README.txt
+
+Start: Thu, 7 May 2015 22:30:00 -0700
+End: Thu, 7 May 2015 22:46:25 -0700
+Tasks: Added logic to account for video names entered with whitespace only. Added CSS styling.
+
+Start: Thu, 7 May 2015 20:00:00 -0700
+End: Thu, 7 May 2015 21:48:29 -0700
+Tasks: Worked on data validation (non-numeric length, missing video name) and ensuring that filter only prints unique values and does not print empty strings.
+
+Start: Thu, 7 May 2015 15:35:00 -0700
+End: Thu, 7 May 2015 15:36:37 -0700
+Tasks: Merge branch 'master' of https://github.com/watsokel/assignment4-part2
+
+Start: Thu, 7 May 2015 12:31:00 -0700
+End: Thu, 7 May 2015 15:31:56 -0700
+Tasks:   Wrote and tested several prepared statements to access MySQL database. Currently working with PHP to print table containing all videos (tested and seems to work properly). Created and tested the Delete All videos button. Currently working on the PHP prepared statements for the video filter.
+
+Start: Mon, 4 May 2015 19:58:00 -0700
+End: Mon, 4 May 2015 19:59:10 -0700
+Tasks: Update README.md
+
+Start: Mon, 4 May 2015 19:56:00 -0700
+End: Mon, 4 May 2015 19:58:31 -0700
+Tasks: Update README.md
+
+Start: Mon, 4 May 2015 19:52:00 -0700
+End: Mon, 4 May 2015 19:53:40 -0700
+Tasks: updating file location to src folder
