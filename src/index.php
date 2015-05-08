@@ -20,7 +20,7 @@ if ($mysqli->connect_errno) {
 	<body>
 		<header>
 			<h1 id="title">CS 290 Assignment 4, Part 2</h1>
-			<h2 id="subtitle">PHP-MySQL Assignment</h2>
+			<h2 id="subtitle">(PHP-MySQL)</h2>
 			<p id="author">Programmed by: Kelvin Watson (OSU ID 932540242)</p>
 		</header>
 		<section id="addVideoForm">
@@ -35,7 +35,7 @@ if ($mysqli->connect_errno) {
 					<label for="name">Video Length</label>
 					<input type="text" name="videoLength" placeholder="Enter Video Length">
 				</fieldset>
-				<input type="submit" name="add" value="Add Video">
+				<p><input type="submit" name="add" value="Add Video"></p>
 			</form>
 		</section>
 
@@ -46,15 +46,15 @@ if ($mysqli->connect_errno) {
         if(empty($_GET['videoLength'])){
           $_GET['videoLength'] = 0;
         }
-        if(empty($_GET['videoName']) || !is_numeric($_GET['videoLength']) || $_GET['videoLength']<0) {
-          if(empty($_GET['videoName'])) {
-            echo 'ERROR: You must enter a Video Name.<br>';
+        if(empty($_GET['videoName']) || ctype_space($_GET['videoName']) || !is_numeric($_GET['videoLength']) || $_GET['videoLength']<0) {
+          if(empty($_GET['videoName']) || ctype_space($_GET['videoName'])) {
+            echo '<p class="error">ERROR: You must enter a Video Name.</p>';
           }
           if(!is_numeric($_GET['videoLength'])){ 
-            echo 'ERROR: Video length must be numeric.<br>';
+            echo '<p class="error">ERROR: Video length must be numeric.</p>';
           }
           if($_GET['videoLength']<0){ 
-            echo 'ERROR: Video length must be 0 or greater.<br>';
+            echo '<p class="error">ERROR: Video length must be 0 or greater.</p>';
           }
         } else {
           if (!($stmt = $mysqli->prepare("INSERT INTO VideoInventory(name, category, length, rented) VALUES (?,?,?,?)"))) {
@@ -99,14 +99,14 @@ if ($mysqli->connect_errno) {
                 if (!$stmt->bind_result($vCat)) {
                   echo "Binding output parameters failed: (" . $stmt->errno . ") " . $stmt->error;
                 }
-                echo 'Select Category';
-                echo '<select name="filter">';
+                echo '<span class="filterText">Select Category</span>';
+                echo '<select name="filter" class="filterText">';
                 echo "<option value=\"allMovies\">All Movies</option>";
                 while ($stmt->fetch()) {
                   echo "<option value=\"$vCat\">$vCat</option>";
                 }
                 echo '</select>';
-                echo "<button type=\"submit\">Filter</button>";
+                echo "<button type=\"submit\" class=\"filterText\" >Filter</button>";
                 $stmt->close();
               ?>
           </fieldset>
@@ -193,7 +193,7 @@ if ($mysqli->connect_errno) {
         if (!$stmt->bind_result($vID, $vName, $vCat, $vLen, $vRented)) {
           echo "Binding result failed: (" . $stmt->errno . ") " . $stmt->error;
         }
-        echo '<table border="1"><thead><tr>';
+        echo '<p><table border="1"><thead><tr>';
       
         foreach ($colHeaders as $key => $colName){
           echo "<th>$colName</th>";
@@ -204,7 +204,7 @@ if ($mysqli->connect_errno) {
           echo '<tr>';
             echo "<td>$vID</td><td>$vName</td><td>$vCat</td><td>$vLen</td>";
             if($vRented==0){
-              echo '<td>Available</td>';
+              echo '<td>Available (Checked In)</td>';
             } else{
               echo '<td>Checked Out</td>';
             }

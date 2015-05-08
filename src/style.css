@@ -1,7 +1,72 @@
+html{
+  font-family: Helvetica, sans-serif;
+}
+
 label{
-    display: inline-block;
-    float: left;
-    clear: left;
-    width: 7em;
-    text-align: left;
+  display: inline-block;
+  float: left;
+  clear: left;
+  width: 7em;
+  text-align: left;
+  margin-right: 0.8em;
+}
+
+header {
+  background-color: #003300; 
+  color:#fff;
+}
+
+header h1{
+  display:inline-block;
+  padding-left: 0.2em;
+  margin-bottom:-1em;
+}
+
+header h2{
+  display: inline-block;
+  font-weight: normal;
+  font-style: italic;
+  text-shadow: none;
+  margin-left: 0.6em;
+  margin-bottom:-1em;
+}
+
+header p{
+  padding-left: 0.4em;
+  padding-bottom: 0.8em;
+}
+
+.error{
+  color: red;
+}
+
+.filterText{
+  margin-right: 0.8em;
+}
+
+fieldset {
+  margin-bottom:1em;
+}
+
+table {
+  text-align: center;
+  border-width: 1px;
+  border-color: #666666;
+  border-collapse: collapse;
+}
+
+th {
+  border-width: 1px;
+  padding: 0.5em;
+  border-style: solid;
+  border-color: #666666;
+  background-color: #dedede;
+}
+
+td {
+  border-width: 1px;
+  padding: 0.5em;
+  border-style: solid;
+  border-color: #666666;
+  background-color: #ffffff;
 }
