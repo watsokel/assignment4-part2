@@ -29,7 +29,7 @@ if ($mysqli->connect_errno) {
 				<fieldset>
 					<legend>Enter Video Information</legend>
 					<label for="name">Video Name</label>
-					<input type="text" name="videoName" placeholder="Video Name"><br>
+					<input type="text" name="videoName" placeholder="Video Name" required><br>
 					<label for="name">Video Category</label>
 					<input type="text" name="videoCategory" placeholder="Video Category"><br>
 					<label for="name">Video Length</label>
